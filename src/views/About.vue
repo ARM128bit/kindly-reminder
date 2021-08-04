@@ -1,5 +1,5 @@
 <template>
   <div class="about">
-    <h1>О напоминания</h1>
+    <h1>Об напоминаниях</h1>
   </div>
 </template>
