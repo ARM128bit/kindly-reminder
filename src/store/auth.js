@@ -19,13 +19,19 @@ const mutations = {
 };
 const actions = {
   signUp({ rootState, state, commit }) {
-    state.isLoging = true;
+    state.gettingLogged = true;
     return fetch(`${rootState.respAPI}${state.authURL}`, state.requestHeaders)
       .then((response) => {
-        return response.json();
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error(response.error);
       })
       .then((json) => {
         commit("refreshUserSession", json);
+      })
+      .catch((error) => {
+        commit("PUSH_ERROR", `Login request failed ${error}`);
       })
       .finally(() => {
         state.gettingLogged = false;

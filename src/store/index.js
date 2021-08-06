@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import authStore from "./auth";
 import reminderStore from "./reminder";
+import notificationStore from "./notification";
 
 Vue.use(Vuex);
 
@@ -14,5 +15,6 @@ export default new Vuex.Store({
   modules: {
     authStore,
     reminderStore,
+    notificationStore,
   },
 });
