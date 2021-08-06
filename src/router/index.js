@@ -1,7 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Reminders from "../views/Reminders.vue";
 import Auth from "../views/Auth.vue";
+import About from "../views/About.vue";
 
 Vue.use(VueRouter);
 
@@ -12,23 +14,43 @@ const routes = [
     component: Home,
   },
   {
-    path: "/auth",
+    path: "/reminders",
+    name: "reminders",
+    component: Reminders,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/Auth",
     name: "Auth",
     component: Auth,
   },
   {
     path: "/about",
     name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    component: About,
   },
 ];
 
 const router = new VueRouter({
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  console.log(to);
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (localStorage.getItem("jwt") == null) {
+      next({
+        path: "/Auth",
+        params: { nextUrl: to.fullPath },
+      });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

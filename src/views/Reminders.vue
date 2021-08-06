@@ -1,5 +1,5 @@
 <template>
-  <div class="home">Домашняя страница</div>
+  <div class="home"></div>
 </template>
 
 <script>
@@ -11,7 +11,7 @@ import { mapGetters, mapState } from "vuex";
 export default {
   name: "Home",
   computed: {
-    ...mapGetters(["userReminders", "userSession"]),
+    ...mapGetters(["userReminders"]),
     ...mapState(["reminderStore"]),
   },
   components: {

@@ -1,16 +1,18 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import authStore from "./auth";
+import reminderStore from "./reminder";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    userSession: null,
     respAPI: "https://europe-west1-st-testcase.cloudfunctions.net",
   },
   mutations: {},
-  actions: {
-    signUp() {},
+  actions: {},
+  modules: {
+    authStore,
+    reminderStore,
   },
-  modules: {},
 });
