@@ -1,5 +1,7 @@
+import { IsEmptyReminder } from "/src/assets/shared";
+
 const state = {
-  reminderURL: "/api/reminders",
+  reminderURL: "/api/reminders/",
   reminders: null,
   isLoading: false,
 };
@@ -29,6 +31,10 @@ const actions = {
         throw new Error(response.error);
       })
       .then((json) => {
+        json.forEach((element) => {
+          element.date = element.date.substring(0, 16);
+          element.onAction = false;
+        });
         commit("refreshUserReminders", json);
       })
       .catch(function (error) {
@@ -38,13 +44,11 @@ const actions = {
         state.isLoading = false;
       });
   },
-  deleteReminder({ state, commit }, payload) {
-    let _reminder = state.reminders.find(payload);
-    _reminder.onAction = true;
+  deleteReminder({ rootState, state, commit }, { id }) {
     return fetch(
-      `${state.reminderURL}${state.reminderURL}${
-        _reminder.id
-      }?userId=${localStorage.getItem("jwt")}`,
+      `${rootState.respAPI}${
+        state.reminderURL
+      }${id}?userId=${localStorage.getItem("jwt")}`,
       {
         method: "DELETE",
       }
@@ -57,28 +61,57 @@ const actions = {
       })
       .catch(function (error) {
         commit("PUSH_ERROR", `Request failed ${error}`);
-      })
-      .finally(() => {
-        _reminder.onAction = true;
       });
   },
-  createReminder({ state, commit }, payload) {
-    return fetch(`${state.reminderURL}?userId=${localStorage.getItem("jwt")}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
+  createReminder({ rootState, state }, payload) {
+    if (!IsEmptyReminder(payload)) {
+      return fetch(
+        `${rootState.respAPI}${state.reminderURL}?userId=${localStorage.getItem(
+          "jwt"
+        )}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify(payload),
+        }
+      ).then((response) => {
         if (response.ok) {
           return response.json();
         }
         throw new Error(response.error);
-      })
-      .catch(function (error) {
-        commit("PUSH_ERROR", `Request failed ${error}`);
       });
+    } else {
+      return new Promise((resolve, reject) => {
+        reject(new Error("Пустые поля"));
+      });
+    }
+  },
+  updateReminder({ rootState, state }, payload) {
+    if (!IsEmptyReminder(payload)) {
+      return fetch(
+        `${rootState.respAPI}${state.reminderURL}${
+          payload.id
+        }?userId=${localStorage.getItem("jwt")}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify(payload),
+        }
+      ).then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error(response.error);
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        reject(new Error("Пустые поля"));
+      });
+    }
   },
 };
 export default { state, getters, mutations, actions };

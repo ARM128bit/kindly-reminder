@@ -1,12 +1,15 @@
 <template>
   <div class="home">
+    <h3>Новое напоминание</h3>
+    <Reminder :reminder="{ note: '', date: '', onAction: false }" />
     <h3>Ваши напоминания</h3>
-    <Reminder :reminder="{ note: '', date: '' }" />
-    <Reminder
-      v-for="(item, index) in userReminders"
-      :reminder="item"
-      v-bind:key="index"
-    />
+    <template v-if="!reminderStore.isLoading">
+      <Reminder
+        v-for="(item, index) in userReminders"
+        :reminder="item"
+        v-bind:key="index"
+      />
+    </template>
   </div>
 </template>
 
@@ -21,6 +24,15 @@ export default {
   computed: {
     ...mapGetters(["userReminders"]),
     ...mapState(["reminderStore"]),
+    remindersHeader() {
+      if (this.reminderStore.isLoading) {
+        return "Ваши напоминания загружаются";
+      }
+      if (this.userReminders.length == 0) {
+        return "У вас ещё нет напоминаний. Вы можете создать свое первое напоминание в форме выше";
+      }
+      return "Ваши напоминания";
+    },
   },
   components: {
     Reminder,

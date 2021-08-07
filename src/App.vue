@@ -7,9 +7,23 @@
       <router-link to="/Auth">Auth</router-link>
     </div>
     <router-view />
+    <error v-if="notificationStore.errorMessage"></error>
+    <notification v-if="notificationStore.notificationMessage"></notification>
   </div>
 </template>
+<script>
+import { mapState } from "vuex";
 
+export default {
+  name: "Notification",
+  computed: {
+    ...mapState(["notificationStore"]),
+  },
+  methods: {},
+  components: {},
+  mounted() {},
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
