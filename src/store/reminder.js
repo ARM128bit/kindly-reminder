@@ -2,7 +2,7 @@ import { IsEmptyReminder } from "/src/assets/shared";
 
 const state = {
   reminderURL: "/api/reminders/",
-  reminders: null,
+  reminders: [],
   isLoading: false,
 };
 
@@ -65,6 +65,7 @@ const actions = {
   },
   createReminder({ rootState, state }, payload) {
     if (!IsEmptyReminder(payload)) {
+      state.reminders.push(payload);
       return fetch(
         `${rootState.respAPI}${state.reminderURL}?userId=${localStorage.getItem(
           "jwt"

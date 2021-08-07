@@ -16,7 +16,11 @@
         />
       </template>
     </flex-item>
-    <flex-item></flex-item>
+    <flex-item>
+      <template v-slot:content>
+        <span v-if="hasDelayed" class="error">ПРОСРОЧЕНО</span>
+      </template>
+    </flex-item>
     <div class="flex-item justify_end">
       <template v-if="reminderLocal.id">
         <input
@@ -57,6 +61,15 @@ export default {
       type: Object,
     },
   },
+  computed: {
+    hasDelayed() {
+      console.log(this.reminderLocal.date);
+      return (
+        new Date() > new Date(this.reminderLocal.date) &&
+        this.reminderLocal.date !== ""
+      );
+    },
+  },
   methods: {
     createReminder() {
       this.reminderLocal.onAction = true;
@@ -64,6 +77,7 @@ export default {
         .dispatch("createReminder", this.reminderLocal)
         .then(() => {
           this.$store.commit("PUSH_NOTIFICATION", `Напоминание создано`);
+          this.reminderLocal.onAction = false;
           return this.$store.dispatch("loadReminders");
         })
         .then(() => (this.reminderLocal = {}))
