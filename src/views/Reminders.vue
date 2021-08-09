@@ -15,6 +15,7 @@
 
 <script>
 // @ is an alias to /src
+import { startTimer } from "/src/assets/shared";
 import Reminder from "@/components/Reminder.vue";
 
 import { mapGetters, mapState } from "vuex";
@@ -38,7 +39,14 @@ export default {
     Reminder,
   },
   mounted() {
-    this.$store.dispatch("loadReminders");
+    let _self = this;
+    this.$store.dispatch("loadReminders").then(() => {
+      _self.$store.getters.userReminders.forEach((item) => {
+        if (typeof item.timerID === "undefined") {
+          startTimer(_self, item);
+        }
+      });
+    });
   },
 };
 </script>

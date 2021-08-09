@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { startTimer } from "/src/assets/shared";
 export default {
   name: "Reminder",
   data() {
@@ -63,7 +64,6 @@ export default {
   },
   computed: {
     hasDelayed() {
-      console.log(this.reminderLocal.date);
       return (
         new Date() > new Date(this.reminderLocal.date) &&
         this.reminderLocal.date !== ""
@@ -72,6 +72,7 @@ export default {
   },
   methods: {
     createReminder() {
+      let _self = this;
       this.reminderLocal.onAction = true;
       this.$store
         .dispatch("createReminder", this.reminderLocal)
@@ -80,6 +81,13 @@ export default {
           this.reminderLocal.onAction = false;
           return this.$store.dispatch("loadReminders");
         })
+        .then(() => {
+          _self.$store.getters.userReminders.forEach((item) => {
+            if (typeof item.timerID === "undefined") {
+              startTimer(_self, item);
+            }
+          });
+        })
         .then(() => (this.reminderLocal = {}))
         .catch((error) => {
           this.$store.commit("PUSH_ERROR", `Request failed ${error}`);
@@ -87,6 +95,7 @@ export default {
         });
     },
     updateReminder() {
+      let _self = this;
       this.reminderLocal.onAction = true;
       this.$store
         .dispatch("updateReminder", this.reminderLocal)
@@ -94,11 +103,19 @@ export default {
           this.$store.commit("PUSH_NOTIFICATION", `Напоминание обновлено`);
           return this.$store.dispatch("loadReminders");
         })
+        .then(() => {
+          _self.$store.getters.userReminders.forEach((item) => {
+            if (typeof item.timerID === "undefined") {
+              startTimer(_self, item);
+            }
+          });
+        })
         .finally(() => {
           this.reminderLocal.onAction = false;
         });
     },
     deleteReminder() {
+      let _self = this;
       if (
         confirm(`Вы точно уверены, что желаете удалить данное напоминание?`)
       ) {
@@ -108,6 +125,13 @@ export default {
           .then(() => {
             this.$store.commit("PUSH_NOTIFICATION", `Напоминание удалено`);
             return this.$store.dispatch("loadReminders");
+          })
+          .then(() => {
+            _self.$store.getters.userReminders.forEach((item) => {
+              if (typeof item.timerID === "undefined") {
+                startTimer(_self, item);
+              }
+            });
           })
           .catch((error) => {
             this.$store.commit("PUSH_ERROR", `Request failed ${error}`);

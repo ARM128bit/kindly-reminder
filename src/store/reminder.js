@@ -79,7 +79,7 @@ const actions = {
         }
       ).then((response) => {
         if (response.ok) {
-          return response.json();
+          return;
         }
         throw new Error(response.error);
       });
@@ -104,7 +104,7 @@ const actions = {
         }
       ).then((response) => {
         if (response.ok) {
-          return response.json();
+          return;
         }
         throw new Error(response.error);
       });
